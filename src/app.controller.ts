@@ -20,4 +20,12 @@ export class AppController {
             title: "Nest with Next",
         };
     }
+
+    @Get("profile")
+    @Render("Profile")
+    profile() {
+        return {
+            title: "Nest with Next",
+        };
+    }
 }
