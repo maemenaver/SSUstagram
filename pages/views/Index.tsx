@@ -1,5 +1,6 @@
 import { NextPageContext } from "next";
 import Head from "next/head";
+import Link from "next/link";
 
 type IndexProps = {
     query: {
@@ -29,10 +30,10 @@ export default function Index(props: IndexProps) {
                     placeholder="비밀번호"
                 />
                 <br />
-                <button>로그인</button>
+                <Link href="">로그인</Link>
             </div>
             <div>
-                계정이 없으신가요? <a href="">회원가입</a>
+                계정이 없으신가요? <Link href="/account">회원가입</Link>
             </div>
         </>
     );
