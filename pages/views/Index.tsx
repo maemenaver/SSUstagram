@@ -31,7 +31,7 @@ export default function Index(props: IndexProps) {
                             <Field
                                 component={TextField}
                                 name="accountID"
-                                type="accountID"
+                                type="text"
                                 placeholder="이메일 주소 또는 사용자 이름"
                             />
                             <br />
