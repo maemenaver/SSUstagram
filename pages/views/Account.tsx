@@ -21,9 +21,24 @@ export default function Account(props: AccountProps) {
                 <Formik
                     initialValues={{
                         email: "",
+                        name: "",
+                        id: "",
                         password: "",
                     }}
-                    onSubmit={(value, helper) => {}}
+                    onSubmit={(value, helper) => {
+                        fetch("/api/auth/sign-up", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                ...value,
+                            }),
+                        }).then((res) => {
+                            console.log(res);
+                        });
+                        helper.setSubmitting(false);
+                    }}
                 >
                     {({ submitForm, isSubmitting }) => (
                         <Form>
@@ -43,7 +58,7 @@ export default function Account(props: AccountProps) {
                             <br />
                             <Field
                                 component={TextField}
-                                name="accountID"
+                                name="id"
                                 type="text"
                                 placeholder="사용자 이름"
                             />
