@@ -1,4 +1,5 @@
 import { Button } from "@mui/material";
+import axios from "axios";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import { NextPageContext } from "next";
@@ -21,16 +22,28 @@ export default function Index(props: IndexProps) {
             <div>
                 <Formik
                     initialValues={{
-                        email: "",
+                        username: "",
                         password: "",
                     }}
-                    onSubmit={(value, helper) => {}}
+                    onSubmit={(value, helper) => {
+                        axios
+                            .post("/api/auth/sign-in", {
+                                ...value,
+                            })
+                            .then((res) => {
+                                console.log(res);
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                                helper.setSubmitting(false);
+                            });
+                    }}
                 >
                     {({ submitForm, isSubmitting }) => (
                         <Form>
                             <Field
                                 component={TextField}
-                                name="accountID"
+                                name="username"
                                 type="text"
                                 placeholder="이메일 주소 또는 사용자 이름"
                             />

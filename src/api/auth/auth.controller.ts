@@ -7,11 +7,14 @@ import {
     Param,
     Delete,
     Request,
+    UseGuards,
 } from "@nestjs/common";
 import { CreateUserDto } from "../user/dto/create-user.dto";
+import { User } from "../user/entities/user.entity";
 import { AuthService } from "./auth.service";
 import { CreateAuthDto } from "./dto/create-auth.dto";
 import { UpdateAuthDto } from "./dto/update-auth.dto";
+import { LocalAuthGuard } from "./guard/local-auth.guard";
 
 @Controller("api/auth")
 export class AuthController {
@@ -23,6 +26,31 @@ export class AuthController {
             const user = await this.authService.signUp(userArg);
             delete user.password;
             return user;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    @UseGuards(LocalAuthGuard)
+    @Post("sign-in")
+    async signIn(@Request() req) {
+        try {
+            const user: User = req.user;
+
+            // const token = await this.authService.tokenSign({
+            //     username: user.accountID,
+            //     password: user.password,
+            // });
+            // const age = new Date().getFullYear() - parseInt(user.age) + 1;
+
+            // await this.usersDauService.update(`${user.id}`);
+
+            const result = {
+                ...user,
+                token: null,
+            };
+
+            return result;
         } catch (err) {
             throw err;
         }
