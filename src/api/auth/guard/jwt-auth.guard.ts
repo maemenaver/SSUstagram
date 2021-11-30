@@ -11,16 +11,16 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
     }
 
     async canActivate(context: ExecutionContext) {
+        await super.canActivate(context);
+
         const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
             ROLES_KEY,
             [context.getHandler(), context.getClass()]
         );
 
-        if (!requiredRoles) {
+        if (!requiredRoles || requiredRoles == []) {
             return true;
         }
-
-        await super.canActivate(context);
 
         const req = context.switchToHttp().getRequest();
 
