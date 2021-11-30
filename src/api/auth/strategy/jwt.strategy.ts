@@ -27,15 +27,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                 (await this.userRepository.findOne({ email: username }));
 
             switch (true) {
-                case !user:
+                case user == undefined:
                     throw Error("User Not Found");
 
                 case password != user.password:
-                    throw Error("wrong token in password");
+                    throw Error("Wrong token in password");
             }
 
             return user;
         } catch (err) {
+            console.log(err);
             if (err instanceof Error) {
                 const { message } = err;
                 switch (true) {
@@ -45,9 +46,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
                             HttpStatus.UNAUTHORIZED
                         );
 
-                    case message === "wrong token in password":
+                    case message === "Wrong token in password":
                         throw new HttpException(
-                            `wrong token in password"`,
+                            `Wrong token in password`,
                             HttpStatus.UNAUTHORIZED
                         );
                 }
