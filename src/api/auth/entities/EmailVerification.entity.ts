@@ -14,4 +14,8 @@ export class EmailVerification {
     get isExpired() {
         return new Date() > this.expiredAt;
     }
+
+    constructor(userID: string) {
+        this.id = userID;
+    }
 }

@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { RenderModule } from "nest-next";
 import Next from "next";
 import { AppController } from "./app.controller";
@@ -7,8 +7,8 @@ import { ApiModule } from "./api/api.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigModule } from "@nestjs/config";
 import { User } from "./api/user/entities/user.entity";
-import session from "express-session";
 import { EmailVerification } from "./api/auth/entities/EmailVerification.entity";
+import { UserModule } from "./api/user/user.module";
 
 @Module({
     imports: [
@@ -35,6 +35,7 @@ import { EmailVerification } from "./api/auth/entities/EmailVerification.entity"
             entities: [User, EmailVerification],
         }),
         ApiModule,
+        UserModule,
     ],
     controllers: [AppController],
     providers: [AppService],

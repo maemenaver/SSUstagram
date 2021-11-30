@@ -1,6 +1,9 @@
+import { Button } from "@mui/material";
 import { NextPageContext } from "next";
+import { useRouter } from "next/dist/client/router";
 import Head from "next/head";
 import Link from "next/link";
+import axiosInstance from "../lib/axiosInstance";
 
 type HomeProps = {
     query: {
@@ -9,6 +12,8 @@ type HomeProps = {
 };
 
 export default function Home(props: HomeProps) {
+    const router = useRouter();
+
     const { title } = props.query;
     return (
         <>
@@ -21,7 +26,20 @@ export default function Home(props: HomeProps) {
                 <Link href="/profile">Profile</Link>
                 <Link href="/follow">Follow</Link>
                 <Link href="/msg">Message</Link>
-                <Link href="/logout">Logout</Link>
+                <Button
+                    onClick={() => {
+                        axiosInstance()
+                            .post("/api/auth/sign-out")
+                            .then((res) => {
+                                router.replace("/");
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            });
+                    }}
+                >
+                    Logout
+                </Button>
             </nav>
             <div></div>
         </>

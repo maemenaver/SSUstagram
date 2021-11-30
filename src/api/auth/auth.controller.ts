@@ -8,12 +8,12 @@ import {
     Delete,
     Request,
     UseGuards,
+    Response,
 } from "@nestjs/common";
 import { CreateUserDto } from "../user/dto/create-user.dto";
 import { User } from "../user/entities/user.entity";
 import { AuthService } from "./auth.service";
-import { CreateAuthDto } from "./dto/create-auth.dto";
-import { UpdateAuthDto } from "./dto/update-auth.dto";
+import { JwtAuthGuard } from "./guard/jwt-auth.guard";
 import { LocalAuthGuard } from "./guard/local-auth.guard";
 
 @Controller("api/auth")
@@ -21,9 +21,20 @@ export class AuthController {
     constructor(private readonly authService: AuthService) {}
 
     @Post("sign-up")
-    async signUp(@Body() userArg: CreateUserDto) {
+    async signUp(
+        @Response({ passthrough: true }) res,
+        @Body() userArg: CreateUserDto
+    ) {
         try {
             const user = await this.authService.signUp(userArg);
+
+            if (user["token"]) {
+                res.setHeader(
+                    "Set-Cookie",
+                    `access_token=${user["token"]}; path=/;`
+                );
+            }
+
             delete user.password;
             return user;
         } catch (err) {
@@ -33,51 +44,71 @@ export class AuthController {
 
     @UseGuards(LocalAuthGuard)
     @Post("sign-in")
-    async signIn(@Request() req) {
+    async signIn(@Request() req, @Response({ passthrough: true }) res) {
         try {
             const user: User = req.user;
 
-            // const token = await this.authService.tokenSign({
-            //     username: user.accountID,
-            //     password: user.password,
-            // });
-            // const age = new Date().getFullYear() - parseInt(user.age) + 1;
+            if (user["token"]) {
+                res.setHeader(
+                    "Set-Cookie",
+                    `access_token=${user["token"]}; path=/;`
+                );
+            }
 
-            // await this.usersDauService.update(`${user.id}`);
+            if (!user.roles.some((v) => v === "EmailVerified")) {
+                await this.authService.sendEmailVerification(
+                    user.id,
+                    user.email
+                );
+            }
 
-            const result = {
-                ...user,
-                token: null,
-            };
-
-            return result;
+            return user;
         } catch (err) {
             throw err;
         }
     }
 
-    @Post()
-    create(@Body() createAuthDto: CreateAuthDto) {
-        return this.authService.create(createAuthDto);
+    @UseGuards(JwtAuthGuard)
+    @Post("sign-out")
+    async signOut(@Request() req, @Response({ passthrough: true }) res) {
+        try {
+            if (req.cookies["access_token"]) {
+                res.setHeader(
+                    "Set-Cookie",
+                    `access_token=x; max-age=0; path=/;`
+                );
+            }
+
+            return {
+                result: true,
+            };
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
     }
 
-    @Get()
-    findAll() {
-        return this.authService.findAll();
+    @UseGuards(JwtAuthGuard)
+    @Post("send-email-verification")
+    async sendEmailVerification(@Request() req) {
+        try {
+            const user: User = req.user;
+            return this.authService.sendEmailVerification(user.id, user.email);
+        } catch (err) {
+            throw err;
+        }
     }
 
-    @Get(":id")
-    findOne(@Param("id") id: string) {
-        return this.authService.findOne(+id);
-    }
-
-    @Patch(":id")
-    update(@Param("id") id: string, @Body() updateAuthDto: UpdateAuthDto) {
-        return this.authService.update(+id, updateAuthDto);
-    }
-
-    @Delete(":id")
-    remove(@Param("id") id: string) {
-        return this.authService.remove(+id);
+    @UseGuards(JwtAuthGuard)
+    @Post("verify-email")
+    async verifyEmail(@Request() req, @Body() { code }) {
+        try {
+            const user: User = req.user;
+            return {
+                result: await this.authService.verifyEmail(user.id, code),
+            };
+        } catch (err) {
+            throw err;
+        }
     }
 }

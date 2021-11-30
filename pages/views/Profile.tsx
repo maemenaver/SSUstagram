@@ -1,21 +1,18 @@
 import { NextPageContext } from "next";
-import Head from "next/head";
 
 type ProfileProps = {
     query: {
-        title: string;
+        username: string;
     };
 };
 
 export default function Profile(props: ProfileProps) {
-    const { title } = props.query;
+    const { username } = props.query;
     return (
         <>
-            <Head>
-                <title>{title}</title>
-            </Head>
             <div>
-                <p>Date and Time : {new Date()}</p>
+                <p>{username}</p>
+                <p>Date and Time : {new Date().toISOString()}</p>
             </div>
         </>
     );

@@ -1,39 +1,38 @@
-import { Button } from "@mui/material";
+import { Button, Link } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
-import { NextPageContext } from "next";
-import { useRouter } from "next/dist/client/router";
-import Head from "next/head";
+import { NextRouter } from "next/dist/client/router";
 import axiosInstance from "../lib/axiosInstance";
 
-type AccountProps = {
-    query: {
-        title: string;
-    };
-};
+interface SignInProps {
+    router: NextRouter;
+}
 
-export default function Account(props: AccountProps) {
-    const router = useRouter();
-
-    const { title } = props.query;
+export default function SignIn(props: SignInProps) {
     return (
         <>
-            <Head>
-                <title>{title}</title>
-            </Head>
             <div>
                 <Formik
                     initialValues={{
-                        email: "",
-                        name: "",
-                        id: "",
+                        username: "",
                         password: "",
                     }}
                     onSubmit={(value, helper) => {
                         axiosInstance()
-                            .post("/api/auth/sign-up", { ...value })
+                            .post("/api/auth/sign-in", {
+                                ...value,
+                            })
                             .then((res) => {
-                                router.push("/");
+                                console.log(res);
+                                if (
+                                    res.data.roles.some(
+                                        (v) => v === "EmailVerified"
+                                    )
+                                ) {
+                                    props.router.replace("/home");
+                                } else {
+                                    props.router.reload();
+                                }
                             })
                             .catch((err) => {
                                 console.log(err);
@@ -45,33 +44,17 @@ export default function Account(props: AccountProps) {
                         <Form>
                             <Field
                                 component={TextField}
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                placeholder="이메일 주소"
-                            />
-                            <br />
-                            <Field
-                                component={TextField}
-                                name="name"
-                                type="text"
-                                autoComplete="name"
-                                placeholder="성명"
-                            />
-                            <br />
-                            <Field
-                                component={TextField}
-                                name="id"
+                                name="username"
                                 type="text"
                                 autoComplete="username"
-                                placeholder="사용자 이름"
+                                placeholder="이메일 주소 또는 사용자 이름"
                             />
                             <br />
                             <Field
                                 component={TextField}
                                 name="password"
                                 type="password"
-                                autoComplete="new-password"
+                                autoComplete="current-password"
                                 placeholder="비밀번호"
                             />
                             <br />
@@ -81,17 +64,15 @@ export default function Account(props: AccountProps) {
                                 disabled={isSubmitting}
                                 onClick={submitForm}
                             >
-                                가입
+                                로그인
                             </Button>
                         </Form>
                     )}
                 </Formik>
             </div>
+            <div>
+                계정이 없으신가요? <Link href="/account">회원가입</Link>
+            </div>
         </>
     );
 }
-
-Account.getInitialProps = async function (context: NextPageContext) {
-    const { query } = context;
-    return { query };
-};

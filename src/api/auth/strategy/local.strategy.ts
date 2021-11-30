@@ -5,12 +5,15 @@ import * as bcrypt from "bcryptjs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "../../user/entities/user.entity";
 import { Repository } from "typeorm";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
     constructor(
         @InjectRepository(User)
-        private readonly userRepository: Repository<User>
+        private readonly userRepository: Repository<User>,
+
+        private jwtService: JwtService
     ) {
         super();
     }
@@ -34,9 +37,15 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
             if (!isValidPassword) throw new Error("Password is wrong");
 
+            user["token"] = this.jwtService.sign({
+                username,
+                password: user.password,
+            });
+
             delete user.password;
             return user;
         } catch (err) {
+            console.log(err);
             if (err instanceof Error) {
                 const { message } = err;
                 switch (true) {

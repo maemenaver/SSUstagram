@@ -44,8 +44,4 @@ export class User {
     @ManyToMany((type) => User, (user) => user.follower)
     @JoinTable()
     following: User[];
-
-    get isEmailVerified() {
-        return this.roles.some((v) => v === "EmailVerified");
-    }
 }

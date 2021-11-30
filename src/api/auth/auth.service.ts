@@ -7,14 +7,18 @@ import { User } from "../user/entities/user.entity";
 import { CreateAuthDto } from "./dto/create-auth.dto";
 import { UpdateAuthDto } from "./dto/update-auth.dto";
 import * as bcrypt from "bcryptjs";
+import { EmailVerification } from "./entities/EmailVerification.entity";
+import fakerStatic from "faker";
+import nodemailer from "nodemailer";
 
 @Injectable()
 export class AuthService {
     constructor(
         private jwtService: JwtService,
-
         @InjectRepository(User)
-        private readonly userRepository: Repository<User>
+        private readonly userRepository: Repository<User>,
+        @InjectRepository(EmailVerification)
+        private readonly EmailVerificationRepository: Repository<EmailVerification>
     ) {}
 
     async signUp(userArg: CreateUserDto) {
@@ -40,29 +44,97 @@ export class AuthService {
             };
 
             await this.userRepository.save(user);
+
+            user["token"] = this.jwtService.sign({
+                username: user.id,
+                password: user.password,
+            });
+
+            await this.sendEmailVerification(user.id, user.email);
+
             return user;
         } catch (err) {
             throw err;
         }
     }
 
-    create(createAuthDto: CreateAuthDto) {
-        return "This action adds a new auth";
+    async sendEmailVerification(userID: string, email: string) {
+        try {
+            const emailVerification =
+                (await this.EmailVerificationRepository.findOne(userID)) ||
+                new EmailVerification(userID);
+
+            emailVerification.code = `${fakerStatic.datatype.number({
+                min: 0,
+                max: 9999,
+                precision: 4,
+            })}`;
+            emailVerification.expiredAt = new Date(
+                new Date().getTime() + 3 * 60 * 1000
+            );
+
+            await this.EmailVerificationRepository.save(emailVerification);
+
+            const transporter = nodemailer.createTransport({
+                service: "Gmail",
+                host: process.env.EMAIL_HOST,
+                port: 587,
+                auth: {
+                    user: process.env.EMAIL_AUTH_EMAIL,
+                    pass: process.env.EMAIL_AUTH_PASSWORD,
+                },
+            });
+
+            return await transporter.sendMail({
+                from: process.env.EMAIL_FROM_USER_NAME,
+                to: email,
+                subject: "인증 관련 메일",
+                text: `인증번호 : ${emailVerification.code}`,
+            });
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
     }
 
-    findAll() {
-        return `This action returns all auth`;
-    }
+    async verifyEmail(userID: string, code: string) {
+        try {
+            const emailVerification =
+                await this.EmailVerificationRepository.findOne(userID);
 
-    findOne(id: number) {
-        return `This action returns a #${id} auth`;
-    }
+            if (emailVerification?.code !== code) {
+                throw new HttpException(
+                    `Wrong code`,
+                    HttpStatus.NOT_ACCEPTABLE
+                );
+            }
 
-    update(id: number, updateAuthDto: UpdateAuthDto) {
-        return `This action updates a #${id} auth`;
-    }
+            if (emailVerification?.expiredAt < new Date()) {
+                throw new HttpException(
+                    `Expired code`,
+                    HttpStatus.NOT_ACCEPTABLE
+                );
+            }
 
-    remove(id: number) {
-        return `This action removes a #${id} auth`;
+            await this.EmailVerificationRepository.delete(userID);
+
+            let user = await this.userRepository.findOne(userID);
+            if (!user.roles.some((v) => v === "EmailVerified")) {
+                user.roles.push("EmailVerified");
+                await this.userRepository.save(user);
+                console.log(user);
+                return user;
+            }
+
+            console.log("verify user", user);
+
+            throw new HttpException(
+                "Already verified email",
+                HttpStatus.CONFLICT
+            );
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
     }
 }
