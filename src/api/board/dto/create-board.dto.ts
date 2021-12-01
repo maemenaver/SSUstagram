@@ -1,1 +1,3 @@
-export class CreateBoardDto {}
+export class CreateBoardDto {
+    content: string;
+}

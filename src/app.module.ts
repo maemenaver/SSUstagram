@@ -9,6 +9,8 @@ import { ConfigModule } from "@nestjs/config";
 import { User } from "./api/user/entities/user.entity";
 import { EmailVerification } from "./api/auth/entities/EmailVerification.entity";
 import { UserModule } from "./api/user/user.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
 
 @Module({
     imports: [
@@ -33,6 +35,9 @@ import { UserModule } from "./api/user/user.module";
             synchronize: true,
             charset: "utf8mb4_unicode_ci",
             entities: [User, EmailVerification],
+        }),
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, "..", "..", "..", "public"),
         }),
         ApiModule,
         UserModule,

@@ -23,7 +23,7 @@ const New = () => {
             axios
                 .post<any>("/api/board/upload-image", formData, config)
                 .then((res) => {
-                    setThumb([...thumb, ...res.data]);
+                    setThumb([...thumb, res.data.files[0].filename]);
                 });
         },
         [thumb]
@@ -49,7 +49,7 @@ const New = () => {
                         return (
                             <li key={i}>
                                 <img
-                                    src={`/uploads/${item}`}
+                                    src={`/${item}`}
                                     width="300"
                                     alt="업로드이미지"
                                 />
