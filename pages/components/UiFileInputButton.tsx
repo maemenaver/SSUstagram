@@ -6,6 +6,7 @@ export interface IProps {
     label: string;
     onChange: (formData: FormData) => void;
     uploadFileName: string;
+    thumb: string[];
 }
 
 /**
@@ -22,6 +23,11 @@ export const UiFileInputButton: React.FC<IProps> = (props) => {
 
     const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!event.target.files?.length) {
+            return;
+        }
+
+        if (event.target.files?.length + props.thumb.length > 5) {
+            console.log("5개 초과", event.target.files, props.thumb);
             return;
         }
 
