@@ -27,7 +27,7 @@ export class AppController {
     }
 
     @Get("account")
-    @Render("Account")
+    @Render("account")
     account(@Request() req) {
         return {
             title: "Test",
@@ -46,7 +46,7 @@ export class AppController {
             return this.appService.routeIndex(authStatus, res);
         }
 
-        return res.render("Profile", {
+        return res.render("profile", {
             username: user.id,
         });
     }
@@ -63,7 +63,7 @@ export class AppController {
             return this.appService.routeIndex(authStatus, res);
         }
 
-        return res.render("Home", {
+        return res.render("home", {
             title: "Nest with Next",
         });
     }
@@ -80,7 +80,7 @@ export class AppController {
             return this.appService.routeIndex(authStatus, res);
         }
 
-        return res.render("New", {
+        return res.render("new", {
             // title: "Nest with Next",
         });
     }
