@@ -1,17 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { RenderableResponse } from "nest-next";
+import { BoardService } from "./api/board/board.service";
 import { AuthStatus } from "./api/user/user.types";
 
 @Injectable()
 export class AppService {
-    routeIndex(authStatus: AuthStatus, res: RenderableResponse) {
+    constructor(private readonly boardService: BoardService) {}
+
+    async routeIndex(authStatus: AuthStatus, res: RenderableResponse) {
         if (authStatus.isEmailVerified) {
-            return res.render("Home", {
-                title: "test",
-            });
+            const board = await this.boardService.findAll();
+
+            return res.render("home", {
+                board,
+            } as any);
         }
 
-        return res.render("Index", {
+        return res.render("index", {
             ...authStatus,
         } as any);
     }

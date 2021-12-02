@@ -9,6 +9,8 @@ import {
     UseInterceptors,
     UploadedFiles,
     UseGuards,
+    Request,
+    Query,
 } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { BoardService } from "./board.service";
@@ -17,19 +19,28 @@ import { UpdateBoardDto } from "./dto/update-board.dto";
 import multer from "multer";
 import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
 import fakerStatic from "faker";
+import { User } from "../user/entities/user.entity";
+import { findAllArgDto } from "./dto/board.dto";
 
 @Controller("api/board")
 export class BoardController {
     constructor(private readonly boardService: BoardService) {}
 
     @Post()
-    create(@Body() createBoardDto: CreateBoardDto) {
-        return this.boardService.create(createBoardDto);
+    @UseGuards(JwtAuthGuard)
+    create(@Request() req, @Body() createBoardDto: CreateBoardDto) {
+        try {
+            const user: User = req.user;
+            return this.boardService.create(user.id, createBoardDto);
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
     }
 
     @Get()
-    findAll() {
-        return this.boardService.findAll();
+    findAll(@Query() query?: findAllArgDto) {
+        return this.boardService.findAll({ ...query });
     }
 
     @Post("upload-image")

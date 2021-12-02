@@ -11,6 +11,8 @@ import { EmailVerification } from "./api/auth/entities/EmailVerification.entity"
 import { UserModule } from "./api/user/user.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
+import { Board } from "./api/board/entities/board.entity";
+import { BoardModule } from "./api/board/board.module";
 
 @Module({
     imports: [
@@ -34,13 +36,14 @@ import { join } from "path";
             database: process.env.MYSQL_DATABASE,
             synchronize: true,
             charset: "utf8mb4_unicode_ci",
-            entities: [User, EmailVerification],
+            entities: [User, EmailVerification, Board],
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, "..", "..", "..", "public"),
         }),
         ApiModule,
         UserModule,
+        BoardModule,
     ],
     controllers: [AppController],
     providers: [AppService],

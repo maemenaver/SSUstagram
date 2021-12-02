@@ -4,8 +4,10 @@ import {
     DeleteDateColumn,
     Entity,
     PrimaryGeneratedColumn,
+    RelationId,
     UpdateDateColumn,
 } from "typeorm";
+import { User } from "../../user/entities/user.entity";
 
 @Entity()
 export class Board {
@@ -22,7 +24,7 @@ export class Board {
     deletedAt: Date;
 
     @Column()
-    author: string;
+    authorID: string;
 
     @Column({ type: "text" })
     content: string;
