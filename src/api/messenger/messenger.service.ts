@@ -3,7 +3,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../user/entities/user.entity";
 import { CreateMessengerDto } from "./dto/create-messenger.dto";
-import { FindMessageDto, SendMessageDto } from "./dto/messenger.dto";
+import {
+    FindMessageDto,
+    FindMessageRes,
+    SendMessageDto,
+} from "./dto/messenger.dto";
 import { UpdateMessengerDto } from "./dto/update-messenger.dto";
 import { Messenger } from "./entities/messenger.entity";
 import { MessengerText } from "./entities/messengerText.entity";
@@ -74,7 +78,7 @@ export class MessengerService {
     async findMessengerByUser(
         userID: string,
         withUserID?: string
-    ): Promise<Messenger[]> {
+    ): Promise<FindMessageRes[]> {
         try {
             let messengers = await this.messengerRepository
                 .createQueryBuilder("messenger")
@@ -89,7 +93,47 @@ export class MessengerService {
                 );
             }
 
-            return messengers;
+            const availableUsers = await this.userRepository
+                .createQueryBuilder("user")
+                .leftJoin("user.following", "following")
+                .leftJoin("user.follower", "follower")
+                .where("following.id = follower.id")
+                .innerJoin("user.following", "following2")
+                .innerJoin("user.follower", "follower2")
+                .getMany();
+
+            const availableUserIDs = availableUsers
+                .map((v) => v.id)
+                .filter((v) => v !== userID);
+
+            console.log("availableUserIDs", availableUserIDs);
+
+            const result: FindMessageRes[] = [];
+
+            for (const msg of messengers) {
+                const msgTargetUser = msg.user.find((v) => v.userID !== userID);
+
+                const targetUser = await this.userRepository.findOne(
+                    msgTargetUser.userID
+                );
+
+                if (!targetUser) continue;
+                if (!availableUserIDs.some((v) => v === targetUser.id))
+                    continue;
+
+                const message = await this.findMessage({
+                    messengerID: msg.id,
+                });
+
+                result.push({
+                    messenger: { ...msg, message },
+                    targetUserInfo: {
+                        ...targetUser,
+                    },
+                });
+            }
+
+            return result;
         } catch (err) {
             console.log(err);
             throw err;

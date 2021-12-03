@@ -22,11 +22,11 @@ export class MessengerUser {
     @Column()
     unreadCount?: number = 0;
 
-    @Column()
+    @Column({ nullable: true })
     lastReadText?: string;
 
     @Column()
-    lastReadTime?: Date;
+    lastReadTime?: Date = new Date();
 
     @ManyToOne((type) => Messenger, (messenger) => messenger.user, {
         cascade: true,

@@ -60,33 +60,10 @@ export class MessengerController {
             const user: User = req.user;
             const userID = user.id;
 
-            const messenger = await this.messengerService.findMessengerByUser(
+            const result = await this.messengerService.findMessengerByUser(
                 userID,
                 args.targetUserID
             );
-
-            const result: FindMessageRes[] = [];
-
-            for (const msg of messenger) {
-                const msgTargetUser = msg.user.find((v) => v.userID !== userID);
-
-                const targetUser = await this.userRepository.findOne(
-                    msgTargetUser.userID
-                );
-
-                if (!targetUser) continue;
-
-                const message = await this.messengerService.findMessage({
-                    messengerID: msg.id,
-                });
-
-                result.push({
-                    messenger: { ...msg, message },
-                    targetUserInfo: {
-                        ...targetUser,
-                    },
-                });
-            }
 
             return result;
         } catch (err) {

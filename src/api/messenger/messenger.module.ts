@@ -18,5 +18,6 @@ import { User } from "../user/entities/user.entity";
     ],
     controllers: [MessengerController],
     providers: [MessengerService],
+    exports: [MessengerService],
 })
 export class MessengerModule {}
