@@ -86,6 +86,17 @@ export class UserService {
         }
     }
 
+    findFollowList(userID: string) {
+        try {
+            return this.userRepository.findOne(userID, {
+                relations: ["following", "follower"],
+            });
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
+
     findAll() {
         return `This action returns all user`;
     }

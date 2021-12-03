@@ -14,21 +14,45 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserFindOneDto } from "./dto/user.dto";
 import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
+import { FollowDto } from "../messenger/dto/messenger.dto";
+import { User } from "./entities/user.entity";
 
 @Controller("api/user")
+@UseGuards(JwtAuthGuard)
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Get()
-    @UseGuards(JwtAuthGuard)
     getUser(@Request() req) {
-        console.log("getUser", req.user);
+        // console.log("getUser", req.user);
         return req.user;
     }
 
     @Post()
     create(@Body() createUserDto: CreateUserDto) {
         return this.userService.create(createUserDto);
+    }
+
+    @Get("follow")
+    findFollowList(@Request() req) {
+        try {
+            const user: User = req.user;
+            return this.findFollowList(user.id);
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
+
+    @Post("follow")
+    follow(@Request() req, @Body() args: FollowDto) {
+        try {
+            const user: User = req.user;
+            return this.userService.follow(user.id, args);
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
     }
 
     @Get(":id")
