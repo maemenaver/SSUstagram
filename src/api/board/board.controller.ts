@@ -20,7 +20,8 @@ import multer from "multer";
 import { JwtAuthGuard } from "../auth/guard/jwt-auth.guard";
 import fakerStatic from "faker";
 import { User } from "../user/entities/user.entity";
-import { findAllArgDto } from "./dto/board.dto";
+import { FindAllArgDto } from "./dto/board.dto";
+import { Board } from "./entities/board.entity";
 
 @Controller("api/board")
 export class BoardController {
@@ -39,7 +40,7 @@ export class BoardController {
     }
 
     @Get()
-    findAll(@Query() query?: findAllArgDto) {
+    findAll(@Query() query?: FindAllArgDto): Promise<[Board[], number]> {
         return this.boardService.findAll({ ...query });
     }
 
@@ -84,16 +85,16 @@ export class BoardController {
 
     @Get(":id")
     findOne(@Param("id") id: string) {
-        return this.boardService.findOne(+id);
+        return this.boardService.findOne(id);
     }
 
     @Patch(":id")
     update(@Param("id") id: string, @Body() updateBoardDto: UpdateBoardDto) {
-        return this.boardService.update(+id, updateBoardDto);
+        return this.boardService.update(id, updateBoardDto);
     }
 
     @Delete(":id")
     remove(@Param("id") id: string) {
-        return this.boardService.remove(+id);
+        return this.boardService.remove(id);
     }
 }
