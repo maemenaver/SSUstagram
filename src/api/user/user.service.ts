@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import axiosInstance from "../../../pages/lib/axiosInstance";
 import { getBearerToken } from "../../lib/token";
+import { FollowDto } from "../messenger/dto/messenger.dto";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserFindOneDto } from "./dto/user.dto";
@@ -46,6 +47,41 @@ export class UserService {
             const user = { ...new User(), ...createUserDto };
             return this.userRepository.save(user);
         } catch (err) {
+            throw err;
+        }
+    }
+
+    async follow(userID: string, args: FollowDto) {
+        try {
+            const { targetUserID } = args;
+
+            const userPromise = this.userRepository.findOne(userID, {
+                relations: ["following"],
+            });
+
+            const targetUserPromise = this.userRepository.findOne(userID, {
+                relations: ["follower"],
+            });
+
+            const [user, targetUser] = await Promise.all([
+                userPromise,
+                targetUserPromise,
+            ]);
+
+            const isFollowing = user.following.some(
+                (v) => v.id === targetUserID
+            );
+            if (isFollowing) {
+                user.following.filter((v) => v.id !== targetUserID);
+                targetUser.follower.filter((v) => v.id !== userID);
+            } else {
+                user.following.push(targetUser);
+                targetUser.follower.push(user);
+            }
+
+            return this.userRepository.save([user, targetUser]);
+        } catch (err) {
+            console.log(err);
             throw err;
         }
     }
