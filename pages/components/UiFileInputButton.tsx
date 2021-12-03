@@ -26,7 +26,7 @@ export const UiFileInputButton: React.FC<IProps> = (props) => {
             return;
         }
 
-        if (event.target.files?.length + props.thumb.length > 5) {
+        if (event.target.files?.length + props.thumb?.length > 5) {
             console.log("5개 초과", event.target.files, props.thumb);
             return;
         }

@@ -13,6 +13,10 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import { Board } from "./api/board/entities/board.entity";
 import { BoardModule } from "./api/board/board.module";
+import { Messenger } from "./api/messenger/entities/messenger.entity";
+import { MessengerUser } from "./api/messenger/entities/messengerUser.entity";
+import { MessengerText } from "./api/messenger/entities/messengerText.entity";
+import { MessengerModule } from "./api/messenger/messenger.module";
 
 @Module({
     imports: [
@@ -36,7 +40,14 @@ import { BoardModule } from "./api/board/board.module";
             database: process.env.MYSQL_DATABASE,
             synchronize: true,
             charset: "utf8mb4_unicode_ci",
-            entities: [User, EmailVerification, Board],
+            entities: [
+                User,
+                EmailVerification,
+                Board,
+                Messenger,
+                MessengerUser,
+                MessengerText,
+            ],
         }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, "..", "..", "..", "public"),
@@ -44,6 +55,7 @@ import { BoardModule } from "./api/board/board.module";
         ApiModule,
         UserModule,
         BoardModule,
+        MessengerModule,
     ],
     controllers: [AppController],
     providers: [AppService],
