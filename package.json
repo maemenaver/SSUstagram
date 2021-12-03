@@ -46,6 +46,7 @@
         "faker": "^5.5.3",
         "formik": "^2.2.9",
         "formik-mui": "^4.0.0-alpha.3",
+        "moment": "^2.29.1",
         "mysql2": "^2.3.3",
         "nest-next": "^9.4.0",
         "next": "^12.0.4",
