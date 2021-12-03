@@ -33,6 +33,11 @@ export class UserController {
         return this.userService.create(createUserDto);
     }
 
+    @Get("all")
+    findAll() {
+        return this.userService.findAll();
+    }
+
     @Get("follow")
     findFollowList(@Request() req) {
         try {
@@ -45,10 +50,10 @@ export class UserController {
     }
 
     @Post("follow")
-    follow(@Request() req, @Body() args: FollowDto) {
+    async follow(@Request() req, @Body() args: FollowDto) {
         try {
             const user: User = req.user;
-            return this.userService.follow(user.id, args);
+            return await this.userService.follow(user.id, args);
         } catch (err) {
             console.log(err);
             throw err;

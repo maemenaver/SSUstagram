@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 import axiosInstance from "../../../pages/lib/axiosInstance";
 import { getBearerToken } from "../../lib/token";
 import { FollowDto } from "../messenger/dto/messenger.dto";
+import { MessengerService } from "../messenger/messenger.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserFindOneDto } from "./dto/user.dto";
@@ -13,6 +14,7 @@ import { AuthStatus } from "./user.types";
 @Injectable()
 export class UserService {
     constructor(
+        private readonly messengerService: MessengerService,
         @InjectRepository(User)
         private readonly userRepository: Repository<User>
     ) {}
@@ -55,31 +57,33 @@ export class UserService {
         try {
             const { targetUserID } = args;
 
-            const userPromise = this.userRepository.findOne(userID, {
-                relations: ["following"],
-            });
+            const users = await this.userRepository.findByIds(
+                [userID, targetUserID],
+                {
+                    relations: ["following", "follower"],
+                }
+            );
 
-            const targetUserPromise = this.userRepository.findOne(userID, {
-                relations: ["follower"],
-            });
-
-            const [user, targetUser] = await Promise.all([
-                userPromise,
-                targetUserPromise,
-            ]);
+            const user = users.find((v) => v.id === userID);
+            const targetUser = users.find((v) => v.id === targetUserID);
 
             const isFollowing = user.following.some(
                 (v) => v.id === targetUserID
             );
             if (isFollowing) {
-                user.following.filter((v) => v.id !== targetUserID);
-                targetUser.follower.filter((v) => v.id !== userID);
+                user.following = user.following.filter(
+                    (v) => v.id !== targetUserID
+                );
+                // targetUser.follower.filter((v) => v.id !== userID);
             } else {
                 user.following.push(targetUser);
-                targetUser.follower.push(user);
+                // targetUser.follower.push(user);
+                if (user.follower.some((v) => v.id === targetUserID)) {
+                    this.messengerService.create(userID, { targetUserID });
+                }
             }
 
-            return this.userRepository.save([user, targetUser]);
+            return await this.userRepository.save(user);
         } catch (err) {
             console.log(err);
             throw err;
@@ -98,7 +102,15 @@ export class UserService {
     }
 
     findAll() {
-        return `This action returns all user`;
+        try {
+            return this.userRepository.find({
+                skip: 0,
+                take: 50,
+            });
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
     }
 
     findOne(args: UserFindOneDto) {

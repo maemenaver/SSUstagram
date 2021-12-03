@@ -38,7 +38,6 @@ export class User {
     roles: Role[] = [];
 
     @ManyToMany((type) => User, (user) => user.following)
-    @JoinTable()
     follower: User[];
 
     @ManyToMany((type) => User, (user) => user.follower)
