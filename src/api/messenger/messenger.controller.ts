@@ -73,7 +73,7 @@ export class MessengerController {
     }
 
     @Post("message")
-    async sendMessage(@Request() req, @Query() args: SendMessageDto) {
+    async sendMessage(@Request() req, @Body() args: SendMessageDto) {
         try {
             const user: User = req.user;
 

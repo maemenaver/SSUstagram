@@ -50,16 +50,19 @@ export class AppController {
         @Request() req,
         @Response({ passthrough: true }) res: RenderableResponse
     ) {
-        const user = await this.userService.getUserByHttp(req);
+        let user = await this.userService.getUserByHttp(req);
         const authStatus = this.userService.getAuthStatus(user);
 
         if (!authStatus.isAuth) {
             return this.appService.routeIndex({ authStatus, res, user });
         }
 
+        user = await this.userService.findFollowList(user.id);
+
         return res.render("Profile", {
             username: user.id,
-        });
+            user,
+        } as any);
     }
 
     @Get("home")

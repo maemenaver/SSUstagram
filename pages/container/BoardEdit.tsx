@@ -13,6 +13,7 @@ import {
 import { Cancel } from "@mui/icons-material";
 import { NextRouter } from "next/dist/client/router";
 import axiosInstance from "../lib/axiosInstance";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 class BoardEditProps {
     status: "EDIT" | "NEW";
@@ -109,6 +110,8 @@ const BoardEdit = (props: BoardEditProps) => {
                                         helper.setSubmitting(false);
                                     });
                             }
+                        } else {
+                            helper.setSubmitting(false);
                         }
                     }}
                 >
@@ -119,11 +122,15 @@ const BoardEdit = (props: BoardEditProps) => {
                                 name="content"
                                 type="text"
                                 multiline={false}
+                                style={{ width: 240 * 5 }}
+                                placeholder={"내용 및 해시태그를 입력하시오"}
                             />
                             <ImageList
                                 sx={{
                                     width: 240 * 5,
                                     height: 240,
+                                    border: "1px solid black",
+                                    overflow: "hidden",
                                 }}
                                 cols={5}
                             >
@@ -139,7 +146,9 @@ const BoardEdit = (props: BoardEditProps) => {
                                                 />
                                                 <ImageListItemBar
                                                     position="top"
-                                                    sx={{ color: "white" }}
+                                                    sx={{
+                                                        background: "#FFFFFF66",
+                                                    }}
                                                     actionIcon={
                                                         <IconButton>
                                                             <Cancel
@@ -158,7 +167,7 @@ const BoardEdit = (props: BoardEditProps) => {
                                     })}
                             </ImageList>
                             <UiFileInputButton
-                                label="Upload Single File"
+                                label="Upload Files"
                                 // allowMultipleFiles 가 false 일경우, 하나씩만 올릴 수 있다.
                                 allowMultipleFiles={true}
                                 uploadFileName="files"
@@ -166,16 +175,45 @@ const BoardEdit = (props: BoardEditProps) => {
                                 thumb={thumb}
                             />
                             <Button
+                                key="save"
                                 variant="contained"
                                 color="primary"
                                 disabled={isSubmitting}
                                 onClick={submitForm}
                             >
-                                SUBMIT
+                                저장
                             </Button>
+                            <br />
+                            <br />
                         </Form>
                     )}
                 </Formik>
+                {status === "EDIT" && (
+                    <Button
+                        key="delete"
+                        variant="outlined"
+                        color="error"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => {
+                            axiosInstance()
+                                .delete(`/api/board/${props.id}`)
+                                .then((res) => {
+                                    console.log(
+                                        "board remove result",
+                                        res.data
+                                    );
+                                    if (res.data) {
+                                        router.replace("/home");
+                                    }
+                                })
+                                .catch((err) => {
+                                    console.log(err);
+                                });
+                        }}
+                    >
+                        삭제
+                    </Button>
+                )}
             </div>
         </>
     );

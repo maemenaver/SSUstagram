@@ -2,6 +2,7 @@ import {
     Button,
     Card,
     CardContent,
+    Container,
     FormControlLabel,
     Pagination,
     Radio,
@@ -40,177 +41,113 @@ export default function Home(props: HomeProps) {
 
     return (
         <>
-            <header>
-                <Formik
-                    initialValues={{
-                        type: "name",
-                        text: "",
-                    }}
-                    onSubmit={(value, helper) => {
-                        const { type, text } = value;
-                        let urlQuery = text ? `${type}=${text}` : "";
-                        Object.keys(reqQuery).forEach((v) => {
-                            if (v === "skip" || type) return;
-                            urlQuery += `&${v}=${reqQuery[v]}`;
-                        });
-
-                        router.push(`/home?${urlQuery}`);
+            <Container maxWidth="md">
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        width: "900px",
                     }}
                 >
-                    {({ submitForm, isSubmitting }) => (
-                        <Form>
-                            <Field
-                                component={TextField}
-                                name="text"
-                                type="text"
-                                // autoComplete="username"
-                                // placeholder="이메일 주소 또는 사용자 이름"
-                            />
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                disabled={isSubmitting}
-                                onClick={submitForm}
-                            >
-                                검색
-                            </Button>
-                            <Field component={RadioGroup} name="type">
-                                <FormControlLabel
-                                    label="작성자"
-                                    value="name"
-                                    control={<Radio disabled={isSubmitting} />}
-                                    disabled={isSubmitting}
-                                />
-                                <FormControlLabel
-                                    label="일반 텍스트"
-                                    value="keyword"
-                                    control={<Radio disabled={isSubmitting} />}
-                                    disabled={isSubmitting}
-                                />
-                                <FormControlLabel
-                                    label="Hashtag"
-                                    value="hashtag"
-                                    control={<Radio disabled={isSubmitting} />}
-                                    disabled={isSubmitting}
-                                />
-                            </Field>
-                        </Form>
-                    )}
-                </Formik>
-                <nav>
-                    <Link href="/home">Home</Link>
-                    <Link href="/new">New</Link>
-                    <Link href="/profile">Profile</Link>
-                    <Link href="/follow">Follow</Link>
-                    <Link href="/msg">Message</Link>
-                    <Button
-                        onClick={() => {
-                            axiosInstance()
-                                .post("/api/auth/sign-out")
-                                .then((res) => {
-                                    router.replace("/");
-                                })
-                                .catch((err) => {
-                                    console.log(err);
-                                });
-                        }}
-                    >
-                        Logout
-                    </Button>
-                </nav>
-            </header>
-            <div
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    width: "900px",
-                }}
-            >
-                {board &&
-                    board.map((data) => {
-                        return (
-                            <Card key={data.id} sx={{ width: 250 + 33 }}>
-                                <CardContent>
-                                    <SwipeableViews
-                                        index={imagePage[data.id] - 1}
-                                    >
-                                        {data.image &&
-                                            data.image.map((v, idx) => {
-                                                // console.log(v);
-                                                return (
-                                                    <img
-                                                        key={`${data.id}_${idx}`}
-                                                        src={`/${v}`}
-                                                        width={250}
-                                                        height={250}
-                                                    />
-                                                );
-                                            })}
-                                    </SwipeableViews>
-                                    <Pagination
-                                        hideNextButton
-                                        hidePrevButton
-                                        count={data.image.length}
-                                        page={imagePage[data.id]}
-                                        onChange={(event, v) => {
-                                            imagePage[data.id] = v;
-                                            setImagePage({
-                                                ...imagePage,
-                                                [data.id]: v,
-                                            });
-                                            // console.log(imageIndex);
-                                        }}
-                                    />
-                                    <div>
-                                        <div>
-                                            <Link
-                                                href={`/home?userID=${data.authorID}`}
-                                            >
-                                                {data.authorID}
-                                            </Link>
-                                            {` ${moment(data.createdAt).format(
-                                                "YYYY. M. D. HH:mm"
-                                            )}`}
-                                        </div>
-                                        <div
-                                            dangerouslySetInnerHTML={{
-                                                __html: data.content,
+                    {board &&
+                        board.map((data) => {
+                            return (
+                                <Card key={data.id} sx={{ width: 250 + 33 }}>
+                                    <CardContent>
+                                        <SwipeableViews
+                                            index={imagePage[data.id] - 1}
+                                        >
+                                            {data.image &&
+                                                data.image.map((v, idx) => {
+                                                    // console.log(v);
+                                                    return (
+                                                        <img
+                                                            key={`${data.id}_${idx}`}
+                                                            src={`/${v}`}
+                                                            width={250}
+                                                            height={250}
+                                                        />
+                                                    );
+                                                })}
+                                        </SwipeableViews>
+                                        <Pagination
+                                            hideNextButton
+                                            hidePrevButton
+                                            count={data.image.length}
+                                            page={imagePage[data.id]}
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
                                             }}
-                                        ></div>
+                                            onChange={(event, v) => {
+                                                imagePage[data.id] = v;
+                                                setImagePage({
+                                                    ...imagePage,
+                                                    [data.id]: v,
+                                                });
+                                                // console.log(imageIndex);
+                                            }}
+                                        />
                                         <div>
-                                            {user.id === data.authorID && (
-                                                <Button
-                                                    onClick={() => {
-                                                        router.push(
-                                                            `/edit?id=${data.id}`
-                                                        );
-                                                    }}
+                                            <div>
+                                                <Link
+                                                    href={`/home?userID=${data.authorID}`}
                                                 >
-                                                    수정
-                                                </Button>
-                                            )}
+                                                    {data.authorID}
+                                                </Link>
+                                                {` ${moment(
+                                                    data.createdAt
+                                                ).format("YYYY. M. D. HH:mm")}`}
+                                            </div>
+                                            <div
+                                                dangerouslySetInnerHTML={{
+                                                    __html: data.content,
+                                                }}
+                                            ></div>
+                                            <div
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "end",
+                                                }}
+                                            >
+                                                {user.id === data.authorID && (
+                                                    <Button
+                                                        onClick={() => {
+                                                            router.push(
+                                                                `/edit?id=${data.id}`
+                                                            );
+                                                        }}
+                                                    >
+                                                        수정
+                                                    </Button>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        );
-                    })}
-            </div>
-            <div>
-                <Pagination
-                    count={Math.ceil(props.query.boardLength / 9)}
-                    page={Math.floor(props.skip / 9) + 1}
-                    onChange={(event, v) => {
-                        let urlQuery = `skip=${(v - 1) * 9}`;
-                        Object.keys(reqQuery).forEach((v) => {
-                            if (v === "skip") return;
-                            urlQuery += `&${v}=${reqQuery[v]}`;
-                        });
-                        router.push(`/home?${urlQuery}`);
-                    }}
-                />
-            </div>
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
+                </div>
+                <div>
+                    <Pagination
+                        count={Math.ceil(props.query.boardLength / 9)}
+                        page={Math.floor(props.skip / 9) + 1}
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                        onChange={(event, v) => {
+                            let urlQuery = `skip=${(v - 1) * 9}`;
+                            Object.keys(reqQuery).forEach((v) => {
+                                if (v === "skip") return;
+                                urlQuery += `&${v}=${reqQuery[v]}`;
+                            });
+                            router.push(`/home?${urlQuery}`);
+                        }}
+                    />
+                </div>
+            </Container>
         </>
     );
 }
@@ -232,7 +169,7 @@ Home.getInitialProps = async function (context: NextPageContext) {
 
             const hashtagRegex = RegExp(`#(${hashtags}*)`, "g");
             v.content = v.content.replaceAll(hashtagRegex, (tag) => {
-                return `<a href="/home/?hashtag=${tag.replace(
+                return `<a href="/home/?hashtagEqual=${tag.replace(
                     "#",
                     ""
                 )}">${tag}</a>`;

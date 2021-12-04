@@ -58,7 +58,8 @@ export class BoardService {
                 args = new FindAllArgDto();
             }
 
-            const { userID, skip, take, hashtag, keyword, name } = args;
+            const { userID, skip, take, hashtag, hashtagEqual, keyword, name } =
+                args;
 
             const findOptions: FindManyOptions<Board> = {
                 order: {
@@ -83,7 +84,7 @@ export class BoardService {
                 return [[], 0];
             }
 
-            if (userID || hashtag || keyword || name) {
+            if (userID || hashtag || hashtagEqual || keyword || name) {
                 findOptions.where = {};
 
                 if (userID) findOptions.where["authorID"] = userID;
@@ -91,13 +92,21 @@ export class BoardService {
                     findOptions.where["authorID"] = In(userIdsContainName);
                 if (keyword)
                     findOptions.where["content"] = Like(`%${keyword}%`);
-                if (hashtag)
-                    findOptions.where["hashtag"] = Like(`%${hashtag}%`);
+                if (hashtag || hashtagEqual)
+                    findOptions.where["hashtag"] = Like(
+                        `%${hashtag ?? hashtagEqual}%`
+                    );
             }
 
-            console.log(findOptions);
+            const result = await this.boardRepository.findAndCount(findOptions);
 
-            return this.boardRepository.findAndCount(findOptions);
+            if (hashtagEqual) {
+                result[0] = result[0].filter((v) =>
+                    v.hashtag.some((k) => k === hashtagEqual)
+                );
+            }
+
+            return result;
         } catch (err) {
             console.log(err);
             throw err;

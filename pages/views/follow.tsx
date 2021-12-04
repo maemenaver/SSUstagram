@@ -17,7 +17,7 @@ export default function Follow(props: FollowProps) {
     return (
         <>
             <div>
-                <List sx={{ width: "320px" }}>
+                <List sx={{ width: "320px", overflowY: "auto" }}>
                     {userList &&
                         userList.map((data) => {
                             if (data.id === user.id) return null;

@@ -1,17 +1,40 @@
+import { Container } from "@mui/material";
 import axios from "axios";
+import moment from "moment";
 import App, { AppContext } from "next/app";
+import { useRouter } from "next/dist/client/router";
 import { useEffect } from "react";
+import Header from "./components/Header";
+import Layout from "./components/Layout";
 import axiosInstance from "./lib/axiosInstance";
 
+moment.locale("ko");
+
 export default function AppRoot({ Component, pageProps }) {
+    const router = useRouter();
+
     useEffect(() => {
         if (pageProps.setAuthorization) {
             axios.defaults.headers["authorization"] =
                 pageProps.setAuthorization;
         }
+
+        console.log(!!pageProps.setAuthorization);
     }, []);
 
-    return <Component {...pageProps} />;
+    return (
+        <Layout>
+            <Container maxWidth="md" style={{ height: "10%" }}>
+                <Header
+                    router={router}
+                    authStatus={!!pageProps.setAuthorization}
+                ></Header>
+            </Container>
+            <Container maxWidth="md" style={{ display: "flex", height: "90%" }}>
+                <Component {...pageProps} />
+            </Container>
+        </Layout>
+    );
 }
 
 AppRoot.getInitialProps = async (appContext: AppContext) => {

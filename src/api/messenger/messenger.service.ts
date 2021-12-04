@@ -133,6 +133,16 @@ export class MessengerService {
                 });
             }
 
+            result.sort(
+                (a, b) =>
+                    (b.messenger.message[0]
+                        ? b.messenger.message[0].createdAt.getTime()
+                        : 0) -
+                    (a.messenger.message[0]
+                        ? a.messenger.message[0].createdAt.getTime()
+                        : 0)
+            );
+
             return result;
         } catch (err) {
             console.log(err);
