@@ -71,10 +71,15 @@ export class AppController {
         @Response({ passthrough: true }) res: RenderableResponse,
         @Query() query: FindAllArgDto
     ) {
-        const user = await this.userService.getUserByHttp(req);
-        const authStatus = this.userService.getAuthStatus(user);
+        try {
+            const user = await this.userService.getUserByHttp(req);
+            const authStatus = this.userService.getAuthStatus(user);
 
-        return this.appService.routeIndex({ authStatus, res, query, user });
+            return this.appService.routeIndex({ authStatus, res, query, user });
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
     }
 
     @Get("new")

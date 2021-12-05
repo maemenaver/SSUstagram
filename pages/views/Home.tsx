@@ -147,29 +147,34 @@ export default function Home(props: HomeProps) {
 }
 
 Home.getInitialProps = async function (context: NextPageContext) {
-    const { query } = context;
+    try {
+        const { query } = context;
 
-    const reqQuery = context.req["query"];
-    const skip = reqQuery?.skip ?? 0;
+        const reqQuery = context.req["query"];
+        const skip = reqQuery?.skip ?? 0;
 
-    const { board } = query as any;
+        const { board } = query as any;
 
-    const imagePage = {};
+        const imagePage = {};
 
-    board.map((v: Board) => {
-        imagePage[v.id] = 1;
-        if (v.hashtag && v.hashtag.length > 0) {
-            let hashtags = v.hashtag.join("|");
+        board.map((v: Board) => {
+            imagePage[v.id] = 1;
+            if (v.hashtag && v.hashtag.length > 0) {
+                let hashtags = v.hashtag.join("|");
 
-            const hashtagRegex = RegExp(`#(${hashtags}*)`, "g");
-            v.content = v.content.replaceAll(hashtagRegex, (tag) => {
-                return `<a href="/home/?hashtagEqual=${tag.replace(
-                    "#",
-                    ""
-                )}">${tag}</a>`;
-            });
-        }
-    });
+                const hashtagRegex = RegExp(`#(${hashtags}*)`, "g");
+                v.content = v.content.replaceAll(hashtagRegex, (tag) => {
+                    return `<a href="/home/?hashtagEqual=${tag.replace(
+                        "#",
+                        ""
+                    )}">${tag}</a>`;
+                });
+            }
+        });
 
-    return { query, imagePage, skip, reqQuery };
+        return { query, imagePage, skip, reqQuery };
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
 };
