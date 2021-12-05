@@ -1,4 +1,4 @@
-import { Button, Link } from "@mui/material";
+import { Button } from "@mui/material";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
 import { NextRouter } from "next/dist/client/router";
@@ -71,7 +71,7 @@ export default function SignIn(props: SignInProps) {
                 </Formik>
             </div>
             <div>
-                계정이 없으신가요? <Link href="/account">회원가입</Link>
+                계정이 없으신가요? <a href="/account">회원가입</a>
             </div>
         </>
     );

@@ -1,10 +1,8 @@
 import { Button, FormControlLabel, Radio } from "@mui/material";
 import { NextRouter } from "next/dist/client/router";
-import Link from "next/link";
 import axiosInstance from "../lib/axiosInstance";
 import { Field, Form, Formik } from "formik";
 import { RadioGroup, TextField } from "formik-mui";
-import { FindAllArgDto } from "../../src/api/board/dto/board.dto";
 
 type HeaderProps = {
     router: NextRouter;
@@ -83,11 +81,9 @@ export default function Header(props: HeaderProps) {
                         )}
                     </Formik>
                     <nav>
-                        <Link href="/home">Home</Link>{" "}
-                        <Link href="/new">New</Link>{" "}
-                        <Link href="/profile">Profile</Link>{" "}
-                        <Link href="/follow">Follow</Link>{" "}
-                        <Link href="/msg">Message</Link>{" "}
+                        <a href="/home">Home</a> <a href="/new">New</a>{" "}
+                        <a href="/profile">Profile</a>{" "}
+                        <a href="/follow">Follow</a> <a href="/msg">Message</a>{" "}
                         <Button
                             onClick={() => {
                                 axiosInstance()

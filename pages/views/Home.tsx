@@ -3,19 +3,13 @@ import {
     Card,
     CardContent,
     Container,
-    FormControlLabel,
     Pagination,
-    Radio,
 } from "@mui/material";
 import { NextPageContext } from "next";
 import { useRouter } from "next/dist/client/router";
-import Link from "next/link";
-import axiosInstance from "../lib/axiosInstance";
 import SwipeableViews from "react-swipeable-views";
 import { Board } from "../../src/api/board/entities/board.entity";
-import { Field, Form, Formik } from "formik";
-import { RadioGroup, TextField } from "formik-mui";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import moment from "moment";
 import { FindAllArgDto } from "../../src/api/board/dto/board.dto";
 import { User } from "../../src/api/user/entities/user.entity";
@@ -91,11 +85,11 @@ export default function Home(props: HomeProps) {
                                         />
                                         <div>
                                             <div>
-                                                <Link
+                                                <a
                                                     href={`/home?userID=${data.authorID}`}
                                                 >
                                                     {data.authorID}
-                                                </Link>
+                                                </a>
                                                 {` ${moment(
                                                     data.createdAt
                                                 ).format("YYYY. M. D. HH:mm")}`}

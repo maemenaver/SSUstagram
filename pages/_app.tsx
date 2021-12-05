@@ -6,7 +6,6 @@ import { useRouter } from "next/dist/client/router";
 import { useEffect } from "react";
 import Header from "./components/Header";
 import Layout from "./components/Layout";
-import axiosInstance from "./lib/axiosInstance";
 
 moment.locale("ko");
 
@@ -43,7 +42,7 @@ AppRoot.getInitialProps = async (appContext: AppContext) => {
     const cookie = appContext?.ctx?.req?.headers?.cookie?.split("=");
     const isToken = cookie?.indexOf("access_token");
 
-    if (!appContext.ctx.req.headers.authorization && isToken > -1) {
+    if (!appContext?.ctx?.req?.headers?.authorization && isToken > -1) {
         const authorization = "Bearer " + cookie[isToken + 1];
         appProps.pageProps.setAuthorization = authorization;
     }
