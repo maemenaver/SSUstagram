@@ -19,10 +19,10 @@ export class BoardService {
     contentToHashtag(content: string) {
         const hashtag = [];
 
-        content.replaceAll(/#([0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣_]*)/gi, (tag) => {
+        content?.replace(/#([0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣_]*)/g, (tag) => {
             const originalTag = tag;
             if (tag != "#") {
-                tag = tag.replaceAll(/#/gi, "");
+                tag = tag?.replace(/#/g, "");
                 hashtag.push(tag);
             }
             return originalTag;
