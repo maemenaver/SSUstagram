@@ -36,6 +36,20 @@ export default function SignIn(props: SignInProps) {
                             })
                             .catch((err) => {
                                 console.log(err);
+                                if (
+                                    err?.error?.response?.data?.includes(
+                                        `"message":"Password is wrong"`
+                                    )
+                                ) {
+                                    alert("Password is wrong");
+                                }
+                                if (
+                                    err?.error?.response?.data?.includes(
+                                        `"message":"User Not Found"`
+                                    )
+                                ) {
+                                    alert("User Not Found");
+                                }
                                 helper.setSubmitting(false);
                             });
                     }}
@@ -72,6 +86,10 @@ export default function SignIn(props: SignInProps) {
             </div>
             <div>
                 계정이 없으신가요? <a href="/account">회원가입</a>
+            </div>
+            <div>
+                커뮤니티 사이트 입니다
+                <img src="https://picsum.photos/200/300" />
             </div>
         </>
     );
