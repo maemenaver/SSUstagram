@@ -163,7 +163,7 @@ Home.getInitialProps = async function (context: NextPageContext) {
                 let hashtags = v.hashtag.join("|");
 
                 const hashtagRegex = RegExp(`#(${hashtags}*)`, "g");
-                v.content = v.content.replaceAll(hashtagRegex, (tag) => {
+                v.content = v.content.replace(hashtagRegex, (tag) => {
                     return `<a href="/home/?hashtagEqual=${tag.replace(
                         "#",
                         ""
