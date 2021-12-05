@@ -53,7 +53,7 @@ export class AppController {
         let user = await this.userService.getUserByHttp(req);
         const authStatus = this.userService.getAuthStatus(user);
 
-        if (!authStatus.isAuth) {
+        if (!authStatus.isEmailVerified) {
             return this.appService.routeIndex({ authStatus, res, user });
         }
 
@@ -85,7 +85,7 @@ export class AppController {
         const user = await this.userService.getUserByHttp(req);
         const authStatus = this.userService.getAuthStatus(user);
 
-        if (!authStatus.isAuth) {
+        if (!authStatus.isEmailVerified) {
             return this.appService.routeIndex({ authStatus, res });
         }
 
@@ -103,7 +103,7 @@ export class AppController {
         const user = await this.userService.getUserByHttp(req);
         const authStatus = this.userService.getAuthStatus(user);
 
-        if (!authStatus.isAuth) {
+        if (!authStatus.isEmailVerified) {
             return this.appService.routeIndex({ authStatus, res });
         }
 
@@ -121,7 +121,7 @@ export class AppController {
         let user = await this.userService.getUserByHttp(req);
         const authStatus = this.userService.getAuthStatus(user);
 
-        if (!authStatus.isAuth) {
+        if (!authStatus.isEmailVerified) {
             return this.appService.routeIndex({ authStatus, res });
         }
 
@@ -143,7 +143,7 @@ export class AppController {
         let user = await this.userService.getUserByHttp(req);
         const authStatus = this.userService.getAuthStatus(user);
 
-        if (!authStatus.isAuth) {
+        if (!authStatus.isEmailVerified) {
             return this.appService.routeIndex({ authStatus, res });
         }
 

@@ -17,8 +17,6 @@ export default function AppRoot({ Component, pageProps }) {
             axios.defaults.headers["authorization"] =
                 pageProps.setAuthorization;
         }
-
-        console.log(!!pageProps.setAuthorization);
     }, []);
 
     return (
