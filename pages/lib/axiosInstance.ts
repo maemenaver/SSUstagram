@@ -17,7 +17,7 @@ export default function axiosInstance() {
             const statusCode = error.response.data.statusCode;
             const message = error.response.data.message;
             const code = error.code;
-            return Promise.reject({ statusCode, message, code });
+            return Promise.reject({ statusCode, message, code, error });
         }
     );
 

@@ -48,7 +48,10 @@ export default function EmailVerification(props: EmailVerificationProps) {
                                 }
                             })
                             .catch((err) => {
-                                console.log(err);
+                                console.log(`${err}`);
+                                if (`${err}`.includes(`406`)) {
+                                    alert("Failed verify. Please resend.");
+                                }
                                 helper.setSubmitting(false);
                             });
                     }}

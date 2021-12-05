@@ -37,6 +37,13 @@ export default function Account(props: AccountProps) {
                             })
                             .catch((err) => {
                                 console.log(err);
+                                if (
+                                    err?.error?.response?.data?.includes(
+                                        `"message":"User already exist"`
+                                    )
+                                ) {
+                                    alert("User already exist");
+                                }
                                 helper.setSubmitting(false);
                             });
                     }}
