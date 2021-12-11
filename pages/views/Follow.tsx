@@ -48,8 +48,8 @@ export default function Follow(props: FollowProps) {
                                             user.following.some(
                                                 (v) => v.id === data.id
                                             )
-                                                ? "FOLLOWING"
-                                                : "FOLLOW"}
+                                                ? "팔로잉"
+                                                : "팔로우"}
                                         </Button>
                                     }
                                 >
