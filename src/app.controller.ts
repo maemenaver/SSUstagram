@@ -32,18 +32,6 @@ export class AppController {
 
             const authStatus = this.userService.getAuthStatus(user);
 
-            console.log(join(__dirname, "..", "..", "..", "EFFL", "run.bat"));
-
-            const result = child_process.execSync(
-                `${join(__dirname, "..", "..", "..", "EFFL", "run.bat")} ${join(
-                    __dirname,
-                    "..",
-                    "..",
-                    "..",
-                    "EFFL"
-                )}`
-            );
-
             return this.appService.routeIndex({ authStatus, res, user });
         } catch (err) {
             console.log(err);
