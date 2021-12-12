@@ -64,7 +64,7 @@ $ npm run start
 
 ### 홈 (/home)
 
-![home](/assets/home.PNG)
+![home](/assets/home.png)
 
 - 상단 메뉴 구성
 - 메뉴 이동 구현
