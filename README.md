@@ -26,6 +26,10 @@ $ npm run start
 # http://web.expertly.info:8053
 ```
 
+## ERD
+
+![ERD](/assets/erd.PNG)
+
 ## 구현 내용
 
 ### 초기화면 (/)
