@@ -18,6 +18,9 @@
 # If node_modules not exists
 $ npm install
 
+# .env.tmp 양식대로
+# .env 파일 구성
+
 # Run server
 $ npm run start
 
