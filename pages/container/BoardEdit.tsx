@@ -1,5 +1,4 @@
-import React, { useCallback, useState } from "react";
-import axios from "axios";
+import { useCallback, useState } from "react";
 import { UiFileInputButton } from "../components/UiFileInputButton";
 import { Field, Form, Formik } from "formik";
 import { TextField } from "formik-mui";
@@ -11,13 +10,11 @@ import {
     ImageListItemBar,
 } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
-import { NextRouter } from "next/dist/client/router";
-import axiosInstance from "../lib/axiosInstance";
-import DeleteIcon from "@mui/icons-material/Delete";
+import axiosInstance from "../lib/axiosInstance"
 
 class BoardEditProps {
     status: "EDIT" | "NEW";
-    router: NextRouter;
+    router: any;
     content?: string = "";
     image?: string[] = [];
     id?: string;
@@ -39,7 +36,7 @@ const BoardEdit = (props: BoardEditProps) => {
                 },
             };
 
-            axios
+            axiosInstance()
                 .post<any>("/api/board/upload-image", formData, config)
                 .then((res) => {
                     const tmpThumb = [
@@ -72,7 +69,7 @@ const BoardEdit = (props: BoardEditProps) => {
                     onSubmit={(value, helper) => {
                         if (thumb.length > 0) {
                             if (status === "NEW") {
-                                axios
+                                axiosInstance()
                                     .post("/api/board", {
                                         ...value,
                                         image: thumb,
@@ -193,7 +190,6 @@ const BoardEdit = (props: BoardEditProps) => {
                         key="delete"
                         variant="outlined"
                         color="error"
-                        startIcon={<DeleteIcon />}
                         onClick={() => {
                             axiosInstance()
                                 .delete(`/api/board/${props.id}`)

@@ -54,14 +54,16 @@ export default function Home(props: HomeProps) {
                                         >
                                             {data.image &&
                                                 data.image.map((v, idx) => {
-                                                    // console.log(v);
                                                     return (
-                                                        <img
-                                                            key={`${data.id}_${idx}`}
-                                                            src={`/${v}`}
-                                                            width={250}
-                                                            height={250}
-                                                        />
+                                                        <div key={`${data.id}_${idx}`}>
+                                                            <p>{data["emotion"][idx]}</p>
+                                                            <img
+                                                                key={`${data.id}_${idx}`}
+                                                                src={`/${v}`}
+                                                                width={250}
+                                                                height={250}
+                                                            />
+                                                        </div>
                                                     );
                                                 })}
                                         </SwipeableViews>

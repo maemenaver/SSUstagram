@@ -1,4 +1,4 @@
-import React from "react";
+import {useRef} from "react";
 
 export interface IProps {
     acceptedFileTypes?: string;
@@ -13,15 +13,15 @@ export interface IProps {
  * Nextjs 에서 MULTER로 이미지 업로드 - 1 -
  * 출처 : https://velog.io/@familyman80/Nextjs-%EC%97%90%EC%84%9C-MULTER%EB%A1%9C-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%97%85%EB%A1%9C%EB%93%9C-1-
  */
-export const UiFileInputButton: React.FC<IProps> = (props) => {
-    const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-    const formRef = React.useRef<HTMLFormElement | null>(null);
+export const UiFileInputButton: any = (props) => {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const formRef = useRef<HTMLFormElement | null>(null);
 
     const onClickHandler = () => {
         fileInputRef.current?.click();
     };
 
-    const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChangeHandler = (event: any) => {
         if (!event.target.files?.length) {
             return;
         }
@@ -33,7 +33,7 @@ export const UiFileInputButton: React.FC<IProps> = (props) => {
 
         const formData = new FormData();
 
-        Array.from(event.target.files).forEach((file) => {
+        Array.from(event.target.files).forEach((file: any) => {
             formData.append(event.target.name, file);
         });
 

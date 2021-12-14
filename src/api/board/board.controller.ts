@@ -24,11 +24,11 @@ import { FindAllArgDto } from "./dto/board.dto";
 import { Board } from "./entities/board.entity";
 
 @Controller("api/board")
+@UseGuards(JwtAuthGuard)
 export class BoardController {
     constructor(private readonly boardService: BoardService) {}
 
     @Post()
-    @UseGuards(JwtAuthGuard)
     create(@Request() req, @Body() createBoardDto: CreateBoardDto) {
         try {
             const user: User = req.user;
@@ -45,7 +45,6 @@ export class BoardController {
     }
 
     @Post("upload-image")
-    @UseGuards(JwtAuthGuard)
     @UseInterceptors(
         FilesInterceptor("files", 5, {
             dest: "./public/",

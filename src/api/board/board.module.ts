@@ -5,11 +5,18 @@ import { MulterModule } from "@nestjs/platform-express";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Board } from "./entities/board.entity";
 import { User } from "../user/entities/user.entity";
+import { BullModule } from "@nestjs/bull";
+import { BoardProcessor } from "./board.processor";
 
 @Module({
-    imports: [MulterModule.register(), TypeOrmModule.forFeature([Board, User])],
+    imports: [MulterModule.register(), TypeOrmModule.forFeature([Board, User]), (process.env.USE_EMOTION && BullModule.registerQueue({
+        name: "meeting",
+        defaultJobOptions: {
+            removeOnComplete: true,
+        },
+    })),],
     controllers: [BoardController],
-    providers: [BoardService],
+    providers: [BoardService, (process.env.USE_EMOTION && BoardProcessor)],
     exports: [BoardService],
 })
 export class BoardModule {}

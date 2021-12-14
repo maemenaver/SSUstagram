@@ -17,6 +17,7 @@ import { Messenger } from "./api/messenger/entities/messenger.entity";
 import { MessengerUser } from "./api/messenger/entities/messengerUser.entity";
 import { MessengerText } from "./api/messenger/entities/messengerText.entity";
 import { MessengerModule } from "./api/messenger/messenger.module";
+import { BullModule } from "@nestjs/bull";
 
 @Module({
     imports: [
@@ -52,6 +53,13 @@ import { MessengerModule } from "./api/messenger/messenger.module";
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, "..", "..", "..", "public"),
         }),
+        (BullModule.forRoot({
+            redis: {
+                host: process.env.REDIS_HOST,
+                port: Number(process.env.REDIS_PORT),
+                password: process.env.REDIS_PASS,
+            },
+        })),
         ApiModule,
         UserModule,
         BoardModule,

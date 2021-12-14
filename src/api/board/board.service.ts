@@ -6,6 +6,11 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { FindManyOptions, In, Like, Repository } from "typeorm";
 import { FindAllArgDto } from "./dto/board.dto";
 import { User } from "../user/entities/user.entity";
+import { Queue } from "bull";
+import { InjectQueue } from "@nestjs/bull";
+import fs from "fs"
+import { join } from "path";
+import {parse} from "csv-parse/sync"
 
 @Injectable()
 export class BoardService {
@@ -13,7 +18,8 @@ export class BoardService {
         @InjectRepository(Board)
         private readonly boardRepository: Repository<Board>,
         @InjectRepository(User)
-        private readonly userRepository: Repository<User>
+        private readonly userRepository: Repository<User>,
+        @InjectQueue("meeting") private readonly queue: Queue
     ) {}
 
     contentToHashtag(content: string) {
@@ -42,6 +48,16 @@ export class BoardService {
                 authorID: userID,
                 hashtag,
             };
+
+            if (process.env.USE_EMOTION) {
+                for (const filenameIdx in createBoardDto.image) {
+                    await this.queue.add("emotion", {
+                        filename: createBoardDto.image[filenameIdx]
+                    }) 
+                }
+            }
+
+
 
             await this.boardRepository.save(board);
 
@@ -105,6 +121,25 @@ export class BoardService {
                     v.hashtag.some((k) => k === hashtagEqual)
                 );
             }
+            
+            if (process.env.USE_EMOTION) {
+                result[0] = result[0].map(v => {
+                    v["emotion"] = []
+                    for (const img in v.image) {
+                        const filename = v.image[img]
+                        const filenameCSV = `${filename.split(".")[0]}.csv`
+                        if (fs.existsSync(`${join(__dirname, "..", "..", "..", "..", "..", "public", filenameCSV)}`)) {
+                            const csv = fs.readFileSync(`${join(__dirname, "..", "..", "..", "..", "..", "public", filenameCSV)}`)
+                            const data = parse(csv.toString("utf-8"))
+                            // console.log(data)
+                            v["emotion"].push(data[1][1])
+                        } else {
+                            v["emotion"].push("LOADING...")
+                        }
+                    }
+                    return v
+                })
+            }
 
             return result;
         } catch (err) {
@@ -124,6 +159,17 @@ export class BoardService {
             board.content = content;
             board.image = image;
             board.hashtag = this.contentToHashtag(content);
+
+            if (process.env.USE_EMOTION) {
+                for (const filenameIdx in board.image) {
+                    await this.queue.add("emotion", {
+                        filename: board.image[filenameIdx]
+                    }) 
+                }
+            }
+
+
+
             return this.boardRepository.save(board);
         } catch (err) {
             console.log(err);

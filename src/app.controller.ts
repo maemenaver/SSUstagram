@@ -1,3 +1,4 @@
+import spawnAsync from "@expo/spawn-async";
 import {
     Controller,
     Get,
@@ -6,7 +7,6 @@ import {
     Request,
     Response,
 } from "@nestjs/common";
-import child_process from "child_process";
 import { RenderableResponse } from "nest-next";
 import { join } from "path";
 import { FindAllArgDto } from "./api/board/dto/board.dto";
@@ -31,18 +31,6 @@ export class AppController {
             const user = await this.userService.getUserByHttp(req);
 
             const authStatus = this.userService.getAuthStatus(user);
-
-            console.log(join(__dirname, "..", "..", "..", "EFFL", "run.bat"));
-
-            const result = child_process.execSync(
-                `${join(__dirname, "..", "..", "..", "EFFL", "run.bat")} ${join(
-                    __dirname,
-                    "..",
-                    "..",
-                    "..",
-                    "EFFL"
-                )}`
-            );
 
             return this.appService.routeIndex({ authStatus, res, user });
         } catch (err) {
