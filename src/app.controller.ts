@@ -6,7 +6,6 @@ import {
     Request,
     Response,
 } from "@nestjs/common";
-import child_process from "child_process";
 import { RenderableResponse } from "nest-next";
 import { join } from "path";
 import { FindAllArgDto } from "./api/board/dto/board.dto";
