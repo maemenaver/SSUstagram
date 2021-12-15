@@ -53,13 +53,13 @@ import { BullModule } from "@nestjs/bull";
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, "..", "..", "..", "public"),
         }),
-        (BullModule.forRoot({
+        BullModule.forRoot({
             redis: {
                 host: process.env.REDIS_HOST,
                 port: Number(process.env.REDIS_PORT),
                 password: process.env.REDIS_PASS,
             },
-        })),
+        }),
         ApiModule,
         UserModule,
         BoardModule,

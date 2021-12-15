@@ -9,14 +9,14 @@ import { BullModule } from "@nestjs/bull";
 import { BoardProcessor } from "./board.processor";
 
 @Module({
-    imports: [MulterModule.register(), TypeOrmModule.forFeature([Board, User]), (process.env.USE_EMOTION && BullModule.registerQueue({
+    imports: [MulterModule.register(), TypeOrmModule.forFeature([Board, User]), BullModule.registerQueue({
         name: "meeting",
         defaultJobOptions: {
             removeOnComplete: true,
         },
-    })),],
+    }),],
     controllers: [BoardController],
-    providers: [BoardService, (process.env.USE_EMOTION && BoardProcessor)],
+    providers: [BoardService, BoardProcessor],
     exports: [BoardService],
 })
 export class BoardModule {}
